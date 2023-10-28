@@ -19,6 +19,7 @@ render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlic
  *
  */
 
+uniform mat4 _node_transform;
 uniform float _region_size = 1024.0;
 uniform float _region_texel_size = 0.0009765625; // = 1./1024.
 uniform int _region_map_size = 16;
@@ -73,8 +74,13 @@ float get_height(vec2 uv) {
 }
 
 void vertex() {
+	float y_offset = _node_transform[3][1];
+	float y_scale = _node_transform[1][1];
+	mat4 transform = _node_transform;
+	transform[3][1] = 0.0;
+
 	// Get vertex of flat plane in world coordinates and set world UV
-	v_vertex = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	v_vertex = (inverse(transform) * MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	
 	// UV coordinates in world space. Values are 0 to _region_size within regions
 	UV = v_vertex.xz;
@@ -84,10 +90,12 @@ void vertex() {
 
 	// Get final vertex location and save it
 	VERTEX.y = get_height(UV2);
-	v_vertex = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	v_vertex = (inverse(transform) * MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 
 	// Flatten normal to be calculated in fragment()
 	NORMAL = vec3(0, 1, 0);
+
+	v_vertex = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
 ////////////////////////

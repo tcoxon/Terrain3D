@@ -67,6 +67,7 @@ void Terrain3D::_initialize() {
 	// Initialize the system
 	if (!_initialized && _is_inside_world && is_inside_tree()) {
 		_material->initialize(_storage->get_region_size());
+		_material->set_node_transform(get_global_transform());
 		_storage->_update_regions(true); // generate map arrays
 		_texture_list->_update_list(); // generate texture arrays
 		_build(_clipmap_levels, _clipmap_size);
@@ -351,7 +352,7 @@ void Terrain3D::_update_collision() {
 		// Non rotated shape for normal array index above
 		//Transform3D xform = Transform3D(Basis(), global_pos);
 		// Rotated shape Y=90 for -90 rotated array index
-		Transform3D xform = Transform3D(Basis(Vector3(0, 1.0, 0), Math_PI * .5),
+		Transform3D xform = get_global_transform() * Transform3D(Basis(Vector3(0, 1.0, 0), Math_PI * .5),
 				global_pos + Vector3(region_size, 0, region_size) * .5);
 
 		if (!_show_debug_collision) {
@@ -722,6 +723,8 @@ void Terrain3D::update_aabbs() {
  * Returns vec3(Double max 3.402823466e+38F) on no intersection. Test w/ if (var.x < 3.4e38)
  */
 Vector3 Terrain3D::get_intersection(Vector3 p_position, Vector3 p_direction) {
+	p_position = get_global_transform().xform_inv(p_position);
+	p_direction = get_global_transform().get_basis().xform_inv(p_direction);
 	Vector3 test_dir = Vector3(p_direction.x, 0., p_direction.z).normalized();
 	Vector3 test_point = p_position;
 	p_direction.normalize();
@@ -856,6 +859,15 @@ void Terrain3D::_notification(int p_what) {
 
 		case NOTIFICATION_TRANSFORM_CHANGED: {
 			//LOG(INFO, "NOTIFICATION_TRANSFORM_CHANGED");
+			Vector3 rotation = get_rotation();
+			if (!Math::is_zero_approx(rotation.x) || !Math::is_zero_approx(rotation.z)) {
+				rotation.x = 0.0;
+				rotation.z = 0.0;
+				set_rotation(rotation);
+			}
+			if (_material.is_valid()) {
+				_material->set_node_transform(get_global_transform());
+			}
 			break;
 		}
 

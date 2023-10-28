@@ -109,7 +109,8 @@ func _forward_3d_gui_input(p_viewport_camera: Camera3D, p_event: InputEvent) -> 
 			# Else, grab mouse position without considering height
 			var t = -Vector3(0, 1, 0).dot(camera_pos) / Vector3(0, 1, 0).dot(camera_dir)
 			mouse_global_position = (camera_pos + t * camera_dir)
-		ui.decal.global_position = mouse_global_position
+		ui.decal.global_position = terrain.global_transform * mouse_global_position
+		
 		if not Input.get_mouse_button_mask() & MOUSE_BUTTON_RIGHT:
 			ui.decal.albedo_mix = 1.0
 			ui.decal_timer.start()
@@ -124,8 +125,7 @@ func _forward_3d_gui_input(p_viewport_camera: Camera3D, p_event: InputEvent) -> 
 	elif p_event is InputEventMouseButton:
 		if p_event.get_button_index() == MOUSE_BUTTON_LEFT:
 			# Update mouse pressed state
-			if mouse_is_pressed != p_event.is_pressed():
-				mouse_is_pressed = p_event.is_pressed()
+			mouse_is_pressed = p_event.is_pressed() && !p_event.is_command_or_control_pressed()
 
 			if mouse_is_pressed:
 				var tool: Terrain3DEditor.Tool = editor.get_tool() 

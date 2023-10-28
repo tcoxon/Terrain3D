@@ -318,6 +318,12 @@ void Terrain3DMaterial::initialize(int p_region_size) {
 	_update_shader();
 }
 
+void Terrain3DMaterial::set_node_transform(const Transform3D &p_transform) {
+	LOG(INFO, "Setting node transform in material: ", p_transform);
+	_node_transform = p_transform;
+	RS->material_set_param(_material, "_node_transform", _node_transform);
+}
+
 Terrain3DMaterial::~Terrain3DMaterial() {
 	LOG(INFO, "Destroying material");
 	if (_initialized) {
@@ -607,6 +613,7 @@ void Terrain3DMaterial::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_update_texture_arrays", "args"), &Terrain3DMaterial::_update_texture_arrays);
 	ClassDB::bind_method(D_METHOD("_update_shader"), &Terrain3DMaterial::_update_shader);
 	ClassDB::bind_method(D_METHOD("_set_region_size", "width"), &Terrain3DMaterial::_set_region_size);
+	ClassDB::bind_method(D_METHOD("set_node_transform", "transform"), &Terrain3DMaterial::set_node_transform);
 
 	ClassDB::bind_method(D_METHOD("_set_shader_parameters", "dict"), &Terrain3DMaterial::_set_shader_parameters);
 	ClassDB::bind_method(D_METHOD("_get_shader_parameters"), &Terrain3DMaterial::_get_shader_parameters);
