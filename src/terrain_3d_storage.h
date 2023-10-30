@@ -73,6 +73,7 @@ private:
 	bool _save_16_bit = false;
 	RegionSize _region_size = SIZE_1024;
 	Vector2i _region_sizev = Vector2i(_region_size, _region_size);
+	real_t _threshold = -INFINITY;
 
 	// Stored Data
 
@@ -120,6 +121,9 @@ public:
 	void update_heights(real_t p_height);
 	void update_heights(Vector2 p_heights);
 	void update_height_range();
+
+	void set_threshold(real_t p_threshold);
+	real_t get_threshold() const { return _threshold; }
 
 	// Regions
 	void set_region_size(RegionSize p_size);

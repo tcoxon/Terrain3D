@@ -20,6 +20,7 @@ render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlic
  */
 
 uniform mat4 _node_transform;
+uniform float _threshold;
 uniform float _region_size = 1024.0;
 uniform float _region_texel_size = 0.0009765625; // = 1./1024.
 uniform int _region_map_size = 16;
@@ -88,14 +89,18 @@ void vertex() {
 	// UV coordinates in region space + texel offset. Values are 0 to 1 within regions
 	UV2 = (UV + vec2(0.5)) * _region_texel_size;
 
-	// Get final vertex location and save it
-	VERTEX.y = get_height(UV2);
-	v_vertex = (inverse(transform) * MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	// Get final vertex location
+	float h = get_height(UV2);
 
 	// Flatten normal to be calculated in fragment()
 	NORMAL = vec3(0, 1, 0);
 
+	VERTEX.y = h * y_scale + y_offset;
 	v_vertex = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+
+	if (h <= _threshold) {
+		VERTEX.y = -1.0/0.0; // discard this vertex
+	}
 }
 
 ////////////////////////

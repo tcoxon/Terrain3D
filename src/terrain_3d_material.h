@@ -41,6 +41,7 @@ private:
 	int _region_size = 1024;
 	Vector2i _region_sizev = Vector2i(_region_size, _region_size);
 	Transform3D _node_transform;
+	real_t _threshold;
 	PackedByteArray _region_map;
 	GeneratedTex _generated_region_blend_map; // 512x512 blurred image of region_map
 
@@ -60,6 +61,7 @@ public:
 	Terrain3DMaterial(){};
 	void initialize(int p_region_size);
 	void set_node_transform(const Transform3D &p_transform);
+	void set_threshold(real_t p_threshold);
 	~Terrain3DMaterial();
 
 	RID get_material_rid() const { return _material; }

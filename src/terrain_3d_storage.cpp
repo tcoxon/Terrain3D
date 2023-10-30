@@ -138,6 +138,14 @@ void Terrain3DStorage::update_height_range() {
 	LOG(INFO, "Updated terrain height range: ", _height_range);
 }
 
+void Terrain3DStorage::set_threshold(real_t p_threshold) {
+	if (_threshold != p_threshold) {
+		LOG(INFO, "Setting threshold: ", p_threshold);
+		_threshold = p_threshold;
+		emit_signal("threshold_changed", _threshold);
+	}
+}
+
 void Terrain3DStorage::set_region_size(RegionSize p_size) {
 	LOG(INFO, p_size);
 	//ERR_FAIL_COND(p_size < SIZE_64);
@@ -982,6 +990,9 @@ void Terrain3DStorage::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_height_range"), &Terrain3DStorage::get_height_range);
 	ClassDB::bind_method(D_METHOD("update_height_range"), &Terrain3DStorage::update_height_range);
 
+	ClassDB::bind_method(D_METHOD("set_threshold", "threshold"), &Terrain3DStorage::set_threshold);
+	ClassDB::bind_method(D_METHOD("get_threshold"), &Terrain3DStorage::get_threshold);
+
 	ClassDB::bind_method(D_METHOD("set_region_size", "size"), &Terrain3DStorage::set_region_size);
 	ClassDB::bind_method(D_METHOD("get_region_size"), &Terrain3DStorage::get_region_size);
 	ClassDB::bind_method(D_METHOD("set_region_offsets", "offsets"), &Terrain3DStorage::set_region_offsets);
@@ -1017,8 +1028,11 @@ void Terrain3DStorage::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("export_image", "file_name", "map_type"), &Terrain3DStorage::export_image);
 	ClassDB::bind_method(D_METHOD("layered_to_image", "map_type"), &Terrain3DStorage::layered_to_image);
 
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "threshold"), "set_threshold", "get_threshold");
+
 	int ro_flags = PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY;
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "version", PROPERTY_HINT_NONE, "", ro_flags), "set_version", "get_version");
+
 	//ADD_PROPERTY(PropertyInfo(Variant::INT, "region_size", PROPERTY_HINT_ENUM, "64:64, 128:128, 256:256, 512:512, 1024:1024, 2048:2048"), "set_region_size", "get_region_size");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "region_size", PROPERTY_HINT_ENUM, "1024:1024"), "set_region_size", "get_region_size");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "save_16_bit", PROPERTY_HINT_NONE), "set_save_16_bit", "get_save_16_bit");
@@ -1031,6 +1045,7 @@ void Terrain3DStorage::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("height_maps_changed"));
 	ADD_SIGNAL(MethodInfo("region_size_changed"));
 	ADD_SIGNAL(MethodInfo("regions_changed"));
+	ADD_SIGNAL(MethodInfo("threshold_changed"));
 
 	// DEPRECATED 0.8.4, Remove 0.9
 	int flags = PROPERTY_USAGE_NONE;

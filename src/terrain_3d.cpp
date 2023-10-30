@@ -63,10 +63,15 @@ void Terrain3D::_initialize() {
 		LOG(DEBUG, "Connecting height_maps_changed signal to update_aabbs()");
 		_storage->connect("height_maps_changed", Callable(this, "update_aabbs"));
 	}
+	if (!_storage->is_connected("threshold_changed", Callable(_material.ptr(), "set_threshold"))) {
+		LOG(DEBUG, "Connecting threshold_changed signal to _material->set_threshold");
+		_storage->connect("threshold_changed", Callable(_material.ptr(), "set_threshold"));
+	}
 
 	// Initialize the system
 	if (!_initialized && _is_inside_world && is_inside_tree()) {
 		_material->initialize(_storage->get_region_size());
+		_material->set_threshold(_storage->get_threshold());
 		_material->set_node_transform(get_global_transform());
 		_storage->_update_regions(true); // generate map arrays
 		_texture_list->_update_list(); // generate texture arrays
@@ -345,6 +350,9 @@ void Terrain3D::_update_collision() {
 					} else {
 						map_data[index] = 0.0f;
 					}
+				}
+				if (map_data[index] <= _storage->get_threshold()) {
+					map_data[index] = -INFINITY;
 				}
 			}
 		}
@@ -773,6 +781,7 @@ Ref<Mesh> Terrain3D::bake_mesh(int p_lod, Terrain3DStorage::HeightFilter p_filte
 
 	int32_t region_size = (int)_storage->get_region_size();
 	int32_t step = 1 << CLAMP(p_lod, 0, 8);
+	real_t threshold = _storage->get_threshold();
 
 	Ref<SurfaceTool> st;
 	st.instantiate();
@@ -787,22 +796,26 @@ Ref<Mesh> Terrain3D::bake_mesh(int p_lod, Terrain3DStorage::HeightFilter p_filte
 				Vector3 v1 = _storage->get_mesh_vertex(p_lod, p_filter, Vector3(x, 0.0, z));
 				Vector3 v2 = _storage->get_mesh_vertex(p_lod, p_filter, Vector3(x + step, 0.0, z + step));
 				Vector3 v3 = _storage->get_mesh_vertex(p_lod, p_filter, Vector3(x, 0.0, z + step));
-				st->set_uv(Vector2(v1.x, v1.z));
-				st->add_vertex(v1);
-				st->set_uv(Vector2(v2.x, v2.z));
-				st->add_vertex(v2);
-				st->set_uv(Vector2(v3.x, v3.z));
-				st->add_vertex(v3);
+				if (v1.y > threshold && v2.y > threshold && v3.y > threshold) {
+					st->set_uv(Vector2(v1.x, v1.z));
+					st->add_vertex(v1);
+					st->set_uv(Vector2(v2.x, v2.z));
+					st->add_vertex(v2);
+					st->set_uv(Vector2(v3.x, v3.z));
+					st->add_vertex(v3);
+				}
 
 				v1 = _storage->get_mesh_vertex(p_lod, p_filter, Vector3(x, 0.0, z));
 				v2 = _storage->get_mesh_vertex(p_lod, p_filter, Vector3(x + step, 0.0, z));
 				v3 = _storage->get_mesh_vertex(p_lod, p_filter, Vector3(x + step, 0.0, z + step));
-				st->set_uv(Vector2(v1.x, v1.z));
-				st->add_vertex(v1);
-				st->set_uv(Vector2(v2.x, v2.z));
-				st->add_vertex(v2);
-				st->set_uv(Vector2(v3.x, v3.z));
-				st->add_vertex(v3);
+				if (v1.y > threshold && v2.y > threshold && v3.y > threshold) {
+					st->set_uv(Vector2(v1.x, v1.z));
+					st->add_vertex(v1);
+					st->set_uv(Vector2(v2.x, v2.z));
+					st->add_vertex(v2);
+					st->set_uv(Vector2(v3.x, v3.z));
+					st->add_vertex(v3);
+				}
 			}
 		}
 	}

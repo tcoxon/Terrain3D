@@ -324,6 +324,12 @@ void Terrain3DMaterial::set_node_transform(const Transform3D &p_transform) {
 	RS->material_set_param(_material, "_node_transform", _node_transform);
 }
 
+void Terrain3DMaterial::set_threshold(real_t p_threshold) {
+	LOG(INFO, "Setting threshold in material: ", p_threshold);
+	_threshold = p_threshold;
+	RS->material_set_param(_material, "_threshold", _threshold);
+}
+
 Terrain3DMaterial::~Terrain3DMaterial() {
 	LOG(INFO, "Destroying material");
 	if (_initialized) {
@@ -614,6 +620,7 @@ void Terrain3DMaterial::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_update_shader"), &Terrain3DMaterial::_update_shader);
 	ClassDB::bind_method(D_METHOD("_set_region_size", "width"), &Terrain3DMaterial::_set_region_size);
 	ClassDB::bind_method(D_METHOD("set_node_transform", "transform"), &Terrain3DMaterial::set_node_transform);
+	ClassDB::bind_method(D_METHOD("set_threshold", "threshold"), &Terrain3DMaterial::set_threshold);
 
 	ClassDB::bind_method(D_METHOD("_set_shader_parameters", "dict"), &Terrain3DMaterial::_set_shader_parameters);
 	ClassDB::bind_method(D_METHOD("_get_shader_parameters"), &Terrain3DMaterial::_get_shader_parameters);

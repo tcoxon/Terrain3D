@@ -2,6 +2,7 @@ shader_type spatial;
 render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx;
 
 uniform mat4 _node_transform;
+uniform float _threshold;
 uniform float _region_size = 1024.0;
 uniform float _region_pixel_size = 0.0009765625; // 1.0 / 1024.0
 uniform int _region_map_size = 16;
@@ -138,10 +139,13 @@ void vertex() {
 	vec3 world_vertex = (inverse(transform) * MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	UV = world_vertex.xz * 0.5;	// Without this, individual material UV needs to be very small.
 	UV2 = ((world_vertex.xz + vec2(0.5)) / vec2(_region_size));
-	VERTEX.y = get_height(UV2);
+	float h = get_height(UV2);
 	NORMAL = vec3(0, 1, 0);
 	
-	VERTEX.y = VERTEX.y * y_scale + y_offset;
+	VERTEX.y = h * y_scale + y_offset;
+	if (h <= _threshold) {
+		VERTEX.y = -1.0/0.0; // discard this vertex
+	}
 }
 
 void fragment() {
