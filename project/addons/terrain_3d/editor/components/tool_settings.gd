@@ -61,6 +61,9 @@ func _ready() -> void:
 	advanced_list.add_child(HSeparator.new(), true)
 	add_setting(SettingType.SLIDER, "gamma", 1.0, advanced_list, "γ", 0.1, 2.0, 0.01)
 	add_setting(SettingType.SLIDER, "jitter", 50, advanced_list, "%", 0, 100)
+	add_setting(SettingType.SLIDER, "snap_x_z", 0.0, advanced_list, "m", 0, 100)
+	add_setting(SettingType.SLIDER, "snap_y", 0.0, advanced_list, "m", 0, 100)
+	add_setting(SettingType.SLIDER, "snap_rotation", 0.0, advanced_list, "°", 0, 180)
 
 
 func create_submenu(parent: Control, button_name: String, layout: Layout) -> Container:

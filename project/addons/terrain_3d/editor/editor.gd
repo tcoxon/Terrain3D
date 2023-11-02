@@ -109,6 +109,9 @@ func _forward_3d_gui_input(p_viewport_camera: Camera3D, p_event: InputEvent) -> 
 			# Else, grab mouse position without considering height
 			var t = -Vector3(0, 1, 0).dot(camera_pos) / Vector3(0, 1, 0).dot(camera_dir)
 			mouse_global_position = (camera_pos + t * camera_dir)
+		var snap_x_z: float = ui.toolbar_settings.get_setting("snap_x_z")
+		if snap_x_z > 0.0:
+			mouse_global_position = (mouse_global_position / snap_x_z).round() * snap_x_z
 		ui.decal.global_position = terrain.global_transform * mouse_global_position
 		
 		if not Input.get_mouse_button_mask() & MOUSE_BUTTON_RIGHT:
@@ -169,7 +172,11 @@ func _forward_3d_gui_input(p_viewport_camera: Camera3D, p_event: InputEvent) -> 
 	
 	if mouse_is_pressed:
 		var continuous: bool = editor.get_tool() != Terrain3DEditor.REGION
-		editor.operate(mouse_global_position, p_viewport_camera.rotation.y, continuous)
+		var rotation := p_viewport_camera.rotation.y
+		var snap := deg_to_rad(ui.toolbar_settings.get_setting("snap_rotation"))
+		if snap > 0.0:
+			rotation = round(rotation / snap) * snap
+		editor.operate(mouse_global_position, rotation, continuous)
 		return AFTER_GUI_INPUT_STOP
 
 	return AFTER_GUI_INPUT_PASS

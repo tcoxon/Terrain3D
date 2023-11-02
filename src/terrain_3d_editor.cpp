@@ -24,6 +24,7 @@ void Terrain3DEditor::Brush::set_data(Dictionary p_data) {
 	_roughness = p_data["roughness"];
 	_gamma = p_data["gamma"];
 	_jitter = p_data["jitter"];
+	_snap_y = p_data["snap_y"];
 	_texture = p_data["texture"];
 	_image = p_data["image"];
 	if (_image.is_valid()) {
@@ -193,6 +194,9 @@ void Terrain3DEditor::_operate_map(Vector3 p_global_position, real_t p_camera_di
 						}
 						default:
 							break;
+					}
+					if (_brush.get_snap_y() > 0.0) {
+						destf = Math::round(destf / _brush.get_snap_y()) * _brush.get_snap_y();
 					}
 					dest = Color(destf, 0.0f, 0.0f, 1.0f);
 					storage->update_heights(destf);

@@ -67,6 +67,7 @@ private:
 		Color _color = COLOR_ROUGHNESS;
 		real_t _roughness = 0.5;
 		real_t _jitter = 0.0;
+		real_t _snap_y = 0.0;
 		real_t _gamma = 1.0;
 		bool _align_to_view = false;
 		bool _auto_regions = false;
@@ -84,6 +85,7 @@ private:
 		Color get_color() const { return _color; }
 		real_t get_roughness() const { return _roughness; }
 		real_t get_jitter() const { return _jitter; }
+		real_t get_snap_y() const { return _snap_y; }
 		real_t get_gamma() const { return _gamma; }
 		bool is_aligned_to_view() const { return _align_to_view; }
 		bool auto_regions_enabled() const { return _auto_regions; }
