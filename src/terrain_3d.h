@@ -138,6 +138,7 @@ public:
 
 	// Baking methods
 	Ref<Mesh> bake_mesh(int p_lod, Terrain3DStorage::HeightFilter p_filter = Terrain3DStorage::HEIGHT_FILTER_NEAREST) const;
+	PackedVector3Array generate_nav_mesh_source_geometry(AABB const &p_global_aabb) const;
 
 protected:
 	void _notification(int p_what);

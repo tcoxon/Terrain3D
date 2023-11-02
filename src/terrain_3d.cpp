@@ -828,6 +828,41 @@ Ref<Mesh> Terrain3D::bake_mesh(int p_lod, Terrain3DStorage::HeightFilter p_filte
 	return result;
 }
 
+PackedVector3Array Terrain3D::generate_nav_mesh_source_geometry(AABB const &p_global_aabb) const {
+	PackedVector3Array faces;
+
+	Terrain3DStorage::HeightFilter filter = Terrain3DStorage::HEIGHT_FILTER_NEAREST;
+	real_t threshold = _storage->get_threshold();
+
+	int32_t x_start = (int32_t)Math::ceil(p_global_aabb.position.x);
+	int32_t x_end = (int32_t)Math::floor(p_global_aabb.get_end().x) + 1;
+	int32_t z_start = (int32_t)Math::ceil(p_global_aabb.position.z);
+	int32_t z_end = (int32_t)Math::floor(p_global_aabb.get_end().z) + 1;
+
+	for (int32_t z = z_start; z < z_end; ++z) {
+		for (int32_t x = x_start; x < x_end; ++x) {
+			Vector3 v1 = _storage->get_mesh_vertex(0, filter, Vector3(x, 0.0, z));
+			Vector3 v2 = _storage->get_mesh_vertex(0, filter, Vector3(x + 1, 0.0, z + 1));
+			Vector3 v3 = _storage->get_mesh_vertex(0, filter, Vector3(x, 0.0, z + 1));
+			if (v1.y > threshold && v2.y > threshold && v3.y > threshold) {
+				faces.push_back(v1);
+				faces.push_back(v2);
+				faces.push_back(v3);
+			}
+			v1 = _storage->get_mesh_vertex(0, filter, Vector3(x, 0.0, z));
+			v2 = _storage->get_mesh_vertex(0, filter, Vector3(x + 1, 0.0, z));
+			v3 = _storage->get_mesh_vertex(0, filter, Vector3(x + 1, 0.0, z + 1));
+			if (v1.y > threshold && v2.y > threshold && v3.y > threshold) {
+				faces.push_back(v1);
+				faces.push_back(v2);
+				faces.push_back(v3);
+			}
+		}
+	}
+
+	return faces;
+}
+
 ///////////////////////////
 // Protected Functions
 ///////////////////////////
@@ -971,6 +1006,7 @@ void Terrain3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("update_aabbs"), &Terrain3D::update_aabbs);
 	ClassDB::bind_method(D_METHOD("get_intersection", "position", "direction"), &Terrain3D::get_intersection);
 	ClassDB::bind_method(D_METHOD("bake_mesh", "lod", "filter"), &Terrain3D::bake_mesh);
+	ClassDB::bind_method(D_METHOD("generate_nav_mesh_source_geometry", "global_aabb"), &Terrain3D::generate_nav_mesh_source_geometry);
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "version", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY), "", "get_version");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "storage", PROPERTY_HINT_RESOURCE_TYPE, "Terrain3DStorage"), "set_storage", "get_storage");
