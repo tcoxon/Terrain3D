@@ -75,3 +75,14 @@ sprint={
 
 textures/vram_compression/import_etc2_astc=true
 occlusion_culling/use_occlusion_culling=true
+
+[shader_globals]
+
+grass_visibility_range_end={
+"type": "float",
+"value": 200.0
+}
+grass_visibility_range_end_margin={
+"type": "float",
+"value": 20.0
+}

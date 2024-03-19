@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://chol2xlfbq7cu"]
+[gd_scene load_steps=14 format=3 uid="uid://chol2xlfbq7cu"]
 
 [ext_resource type="Script" path="res://demo/src/DemoScene.gd" id="1_k7qca"]
 [ext_resource type="PackedScene" uid="uid://d2jihfohphuue" path="res://demo/components/UI.tscn" id="2_nqak5"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bb2lp50sjndus" path="res://demo/components/World.tscn" id="3_yqldq"]
 [ext_resource type="Terrain3DStorage" uid="uid://lalq1xnmbjdl" path="res://demo/data/terrain_storage.res" id="5_sl43a"]
 [ext_resource type="Terrain3DTextureList" uid="uid://dal3jhw6241qg" path="res://demo/data/texture_list.tres" id="8_g2of2"]
+[ext_resource type="PackedScene" uid="uid://bcvdtnnj70ups" path="res://demo/grass/terrain_3d_grass.tscn" id="9_gvorp"]
 
 [sub_resource type="Gradient" id="Gradient_vr1m7"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -89,3 +90,5 @@ render_cull_margin = 1000.0
 collision_mask = 3
 mesh_size = 64
 transform = Transform3D(1, 0, 1.49012e-08, 0, 1, 0, -1.49012e-08, 0, 1, -3.05176e-05, 0, 0)
+
+[node name="terrain_3d_grass" parent="Terrain3D" instance=ExtResource("9_gvorp")]
